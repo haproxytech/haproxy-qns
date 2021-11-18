@@ -1,0 +1,7 @@
+# haproxy-qns
+
+This is the repository which contains files for QUIC interop test of haproxy as
+described here : https://github.com/marten-seemann/quic-interop-runner
+
+It contains a Dockerfile and all related files to build a container with a QUIC
+haproxy. This can then be used as a server implementation in the tests suite.
