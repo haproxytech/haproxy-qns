@@ -48,4 +48,4 @@ RUN chmod +x run_endpoint.sh
 
 STOPSIGNAL SIGUSR1
 
-ENTRYPOINT [ "./run_endpoint.sh" ]
+ENTRYPOINT [ "/run_endpoint.sh" ]
