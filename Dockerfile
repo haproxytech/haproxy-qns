@@ -1,5 +1,6 @@
 FROM ubuntu:20.04 AS builder-ssl
 
+ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update && apt-get -y install git make gcc
 
 RUN git clone --depth 1 -b OpenSSL_1_1_1l+quic https://github.com/quictls/openssl.git
@@ -12,6 +13,7 @@ COPY --from=builder-ssl \
   /usr/local/lib/libssl.so* /usr/local/lib/libcrypto.so* /usr/local/lib/
 
 ADD https://api.github.com/repos/haproxytech/quic-dev/git/refs/heads/qns version.json
+ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update && apt-get -y install git make gcc \
   && git clone -b qns https://github.com/haproxytech/quic-dev.git haproxy \
   && cd /haproxy && make -j $(nproc) \
