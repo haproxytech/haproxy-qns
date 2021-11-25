@@ -1,7 +1,9 @@
 name: docker-auto
+# runs every at 6:50 AM
+# the image should be updated before the interop schedule every day at 8AM
 on:
   schedule:
-    - cron: '10 9 * * 1-5'
+    - cron: '50 6 * * 1-5'
   workflow_dispatch:
 
 
