@@ -33,6 +33,7 @@ RUN apt-get -y update && apt-get -y install git make gcc \
     LDFLAGS="-fuse-ld=gold" \
     ARCH_FLAGS="-pg" \
     USE_TFO=1 \
+    IGNOREGIT=1 VERSION=$(git log -1 --pretty=format:%H) \
   && make install
 
 FROM martenseemann/quic-network-simulator-endpoint:latest

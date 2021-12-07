@@ -31,6 +31,8 @@ elif [ "$ROLE" == "server" ]; then
 	cp /certs/cert.pem /tmp/
 	cp /certs/priv.key /tmp/cert.pem.key
 
+	export LD_LIBRARY_PATH=/usr/local/lib
+	echo "haproxy version $(haproxy -v)"
 	echo "starting haproxy..."
-	LD_LIBRARY_PATH=/usr/local/lib /usr/local/sbin/haproxy -d -dM -f /quic.cfg > $LOG
+	/usr/local/sbin/haproxy -d -dM -f /quic.cfg > $LOG
 fi
