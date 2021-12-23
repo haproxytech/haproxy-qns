@@ -15,7 +15,7 @@ COPY --from=builder-ssl \
 ADD https://api.github.com/repos/haproxytech/quic-dev/git/refs/heads/qns version.json
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update && apt-get -y install git make gcc \
-  && git clone -b qns https://github.com/haproxytech/quic-dev.git haproxy \
+  && git clone --depth 1 -b qns https://github.com/haproxytech/quic-dev.git haproxy \
   && cd /haproxy && make -j $(nproc) \
     CC=gcc \
     TARGET=linux-glibc \
