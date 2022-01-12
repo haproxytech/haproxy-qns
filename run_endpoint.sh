@@ -33,5 +33,13 @@ elif [ "$ROLE" == "server" ]; then
 	export LD_LIBRARY_PATH=/usr/local/lib
 	echo "haproxy version $(haproxy -v)"
 	echo "starting haproxy..."
-	/usr/local/sbin/haproxy -d -dM -f /quic.cfg &> $LOG
+
+	case $TESTCASE in
+		retry)
+			HAP_EXTRA_ARGS="quic-force-retry" /usr/local/sbin/haproxy -d -dM -f /quic.cfg &> $LOG
+		;;
+		*)
+			HAP_EXTRA_ARGS="" /usr/local/sbin/haproxy -d -dM -f /quic.cfg &> $LOG
+		;;
+	esac
 fi
