@@ -10,14 +10,13 @@ set -eu
 # - SERVER_PARAMS contains user-supplied command line parameters
 # - CLIENT_PARAMS contains user-supplied command line parameters
 
-# TODO fix the TESTCASE multiconnect
 case $TESTCASE in
-    versionnegotiation|handshake|transfer|retry|resumption|http3|multiconnect|zerortt|chacha20|keyupdate|ecn)
+versionnegotiation|handshake|transfer|retry|resumption|http3|multiconnect|zerortt|chacha20|keyupdate|ecn)
 	:
-	;;
-    *)
+;;
+*)
 	exit 127
-	;;
+;;
 esac
 
 LOG=/logs/log.txt
