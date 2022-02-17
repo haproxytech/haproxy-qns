@@ -38,12 +38,15 @@ RUN apt-get -y update && apt-get -y install git make gcc \
 
 FROM martenseemann/quic-network-simulator-endpoint:latest
 
-RUN apt-get -y update && apt-get -y install python3 && rm -rf /var/lib/apt/lists/*
+# Required for lighttpd
+ENV TZ=Europe/Paris
+RUN echo $TZ > /etc/timezone && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
+RUN apt-get -y update && apt-get -y install lighttpd && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder-ssl \
   /usr/local/lib/libssl.so* /usr/local/lib/libcrypto.so* /usr/local/lib/
 COPY --from=builder /usr/local/sbin/haproxy /usr/local/sbin/
-COPY quic.cfg /
+COPY quic.cfg lighttpd.cfg /
 
 COPY run_endpoint.sh .
 RUN chmod +x run_endpoint.sh

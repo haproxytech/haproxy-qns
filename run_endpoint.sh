@@ -24,8 +24,8 @@ LOG=/logs/log.txt
 if [ "$ROLE" == "client" ]; then
 	exit 127
 elif [ "$ROLE" == "server" ]; then
-	echo "starting python http server"
-	python3 -m http.server 10080 -d /www & sleep 1
+	echo "starting lighttpd server"
+	lighttpd -f /lighttpd.cfg
 
 	cp /certs/cert.pem /tmp/
 	cp /certs/priv.key /tmp/cert.pem.key
