@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update && apt-get -y install git make gcc
 
 RUN git clone --depth 1 -b OpenSSL_1_1_1l+quic https://github.com/quictls/openssl.git
-RUN cd /openssl && ./config enable-tls1_3 && make -j$(nproc) && make install_sw
+RUN cd /openssl && ./config && make -j$(nproc) && make install_sw
 
 FROM ubuntu:20.04 AS builder
 
@@ -36,7 +36,6 @@ RUN apt-get -y update && apt-get -y install git make gcc \
     SILENT_DEFINE="-DENABLE_QUIC_STDOUT_TRACES" \
     LDFLAGS="-fuse-ld=gold" \
     ARCH_FLAGS="-pg" \
-    USE_TFO=1 \
     IGNOREGIT=1 VERSION=$(git log -1 --pretty=format:%H) \
   && make install
 
