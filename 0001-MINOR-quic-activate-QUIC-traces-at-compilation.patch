@@ -1,0 +1,53 @@
+From 118b2cbf8430a9513947c27a8403ff380e1dcaf2 Mon Sep 17 00:00:00 2001
+From: Amaury Denoyelle <adenoyelle@haproxy.com>
+Date: Thu, 25 Nov 2021 16:05:16 +0100
+Subject: [PATCH] MINOR: quic: activate QUIC traces at compilation
+
+Implement a function quic_init_stdout_traces called at STG_INIT. If
+ENABLE_QUIC_STDOUT_TRACES preprocessor define is set, the QUIC trace
+module will be automatically activated to emit traces on stdout on the
+developer level.
+
+The main purpose for now is to be able to generate traces on the haproxy
+docker image used for QUIC interop testing suite. This should facilitate
+test failure analysis.
+---
+ src/xprt_quic.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/src/xprt_quic.c b/src/xprt_quic.c
+index c2d753ddc..6253ddafe 100644
+--- a/src/xprt_quic.c
++++ b/src/xprt_quic.c
+@@ -50,6 +50,7 @@
+ #include <haproxy/cbuf.h>
+ #include <haproxy/proto_quic.h>
+ #include <haproxy/quic_tls.h>
++#include <haproxy/sink.h>
+ #include <haproxy/ssl_sock.h>
+ #include <haproxy/task.h>
+ #include <haproxy/trace.h>
+@@ -6522,6 +6523,20 @@ void qc_notify_close(struct quic_conn *qc)
+ 		qc->conn->mux->wake(qc->conn);
+ }
+ 
++/* Function to automatically activate QUIC traces on stdout.
++ * Activated via the compilation flag -DENABLE_QUIC_STDOUT_TRACES.
++ * Main use for now is in the docker image for QUIC interop testing.
++ */
++static void quic_init_stdout_traces(void)
++{
++#ifdef ENABLE_QUIC_STDOUT_TRACES
++	trace_quic.sink = sink_find("stdout");
++	trace_quic.level = TRACE_LEVEL_DEVELOPER;
++	trace_quic.state = TRACE_STATE_RUNNING;
++#endif
++}
++INITCALL0(STG_INIT, quic_init_stdout_traces);
++
+ /*
+  * Local variables:
+  *  c-indent-level: 8
+-- 
+2.36.1
+
