@@ -11,22 +11,22 @@ If the macro ENABLE_QUIC_STDOUT_TRACES is defined, qmux traces are
 outputted automatically on stdout. This is useful for the haproxy-qns
 interop docker image.
 ---
- src/mux_quic.c | 16 ++++++++++++++++
+ src/qmux_trace.c | 16 ++++++++++++++++
  1 file changed, 16 insertions(+)
 
-diff --git a/src/mux_quic.c b/src/mux_quic.c
+diff --git a/src/qmux_trace.c b/src/qmux_trace.c
 index 5f3bda0e1..025f91c60 100644
---- a/src/mux_quic.c
-+++ b/src/mux_quic.c
-@@ -11,6 +11,7 @@
- #include <haproxy/pool.h>
- #include <haproxy/quic_stream.h>
- #include <haproxy/quic_tp-t.h>
+--- a/src/qmux_trace.c
++++ b/src/qmux_trace.c
+@@ -5,6 +5,7 @@
+ #include <haproxy/connection.h>
+ #include <haproxy/chunk.h>
+ #include <haproxy/mux_quic.h>
 +#include <haproxy/sink.h>
- #include <haproxy/ssl_sock-t.h>
- #include <haproxy/trace.h>
- #include <haproxy/xprt_quic.h>
-@@ -1660,6 +1660,21 @@ static void qmux_trace(enum trace_level level, uint64_t mask,
+
+ /* trace source and events */
+ static void qmux_trace(enum trace_level level, uint64_t mask,
+@@ -102,6 +102,21 @@ static void qmux_trace(enum trace_level level, uint64_t mask,
  	}
  }
  
@@ -46,8 +46,8 @@ index 5f3bda0e1..025f91c60 100644
 +INITCALL0(STG_INIT, qmux_init_stdout_traces);
 +
  
- static const struct mux_ops qc_ops = {
- 	.init = qc_init,
+ /* register qmux traces */
+ INITCALL1(STG_REGISTER, trace_register_source, TRACE_SOURCE);
 -- 
 2.36.1
 
