@@ -23,9 +23,9 @@ index 5f3bda0e1..025f91c60 100644
  #include <haproxy/chunk.h>
  #include <haproxy/mux_quic.h>
 +#include <haproxy/sink.h>
+ #include <haproxy/quic_frame-t.h>
 
  /* trace source and events */
- static void qmux_trace(enum trace_level level, uint64_t mask,
 @@ -102,6 +102,21 @@ static void qmux_trace(enum trace_level level, uint64_t mask,
  	}
  }

@@ -12,14 +12,14 @@ The main purpose for now is to be able to generate traces on the haproxy
 docker image used for QUIC interop testing suite. This should facilitate
 test failure analysis.
 ---
- src/xprt_quic.c | 16 ++++++++++++++++
+ src/quic_conn.c | 16 ++++++++++++++++
  1 file changed, 16 insertions(+)
 
-diff --git a/src/xprt_quic.c b/src/xprt_quic.c
+diff --git a/src/quic_conn.c b/src/quic_conn.c
 index c2d753ddc..6253ddafe 100644
---- a/src/xprt_quic.c
-+++ b/src/xprt_quic.c
-@@ -50,6 +50,7 @@
+--- a/src/quic_conn.c
++++ b/src/quic_conn.c
+@@ -56,6 +56,7 @@
  #include <haproxy/cbuf.h>
  #include <haproxy/proto_quic.h>
  #include <haproxy/quic_tls.h>
@@ -27,8 +27,8 @@ index c2d753ddc..6253ddafe 100644
  #include <haproxy/ssl_sock.h>
  #include <haproxy/task.h>
  #include <haproxy/trace.h>
-@@ -6522,6 +6523,20 @@ void qc_notify_close(struct quic_conn *qc)
- 		qc->conn->mux->wake(qc->conn);
+@@ -7165,6 +7165,20 @@ void qc_notify_close(struct quic_conn *qc)
+ 	TRACE_LEAVE(QUIC_EV_CONN_CLOSE, qc);
  }
  
 +/* Function to automatically activate QUIC traces on stdout.
