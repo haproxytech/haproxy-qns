@@ -12,14 +12,11 @@ COPY --from=builder-ssl /usr/local/include/openssl/ /usr/local/include/openssl/
 COPY --from=builder-ssl \
   /usr/local/lib/libssl.so* /usr/local/lib/libcrypto.so* /usr/local/lib/
 
-ADD *.patch /tmp/
 ADD https://api.github.com/repos/haproxytech/quic-dev/git/refs/heads/qns version.json
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update && apt-get -y install git make gcc \
   && git clone --depth 1 -b qns https://github.com/haproxytech/quic-dev.git haproxy \
   && cd /haproxy \
-  && patch -p1 < /tmp/0001-MINOR-quic-activate-QUIC-traces-at-compilation.patch \
-  && patch -p1 < /tmp/0002-MINOR-mux-quic-activate-qmux-traces-on-stdout-via-ma.patch \
   && make -j $(nproc) \
     CC=gcc \
     TARGET=linux-glibc \
@@ -33,7 +30,6 @@ RUN apt-get -y update && apt-get -y install git make gcc \
     DEBUG_CFLAGS="-g -Wno-deprecated-declarations" \
     ERR=1 \
     DEBUG="-DDEBUG_DONT_SHARE_POOLS -DDEBUG_MEMORY_POOLS -DDEBUG_STRICT=2 -DDEBUG_TASK -DDEBUG_FAIL_ALLOC" \
-    SILENT_DEFINE="-DENABLE_QUIC_STDOUT_TRACES" \
     LDFLAGS="-fuse-ld=gold" \
     ARCH_FLAGS="-pg" \
     IGNOREGIT=1 VERSION=$(git log -1 --pretty=format:%H) \
