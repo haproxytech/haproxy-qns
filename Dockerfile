@@ -32,7 +32,7 @@ RUN apt-get -y update && apt-get -y install git make gcc \
     CPU_CFLAGS.generic="-O0" \
     DEBUG_CFLAGS="-g -Wno-deprecated-declarations" \
     ERR=1 \
-    DEBUG="-DDEBUG_FULL -DDEBUG_DONT_SHARE_POOLS -DDEBUG_MEMORY_POOLS -DDEBUG_STRICT=2 -DDEBUG_TASK -DDEBUG_FAIL_ALLOC" \
+    DEBUG="-DDEBUG_DONT_SHARE_POOLS -DDEBUG_MEMORY_POOLS -DDEBUG_STRICT=2 -DDEBUG_TASK -DDEBUG_FAIL_ALLOC" \
     SILENT_DEFINE="-DENABLE_QUIC_STDOUT_TRACES" \
     LDFLAGS="-fuse-ld=gold" \
     ARCH_FLAGS="-pg" \
