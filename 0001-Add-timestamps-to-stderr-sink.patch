@@ -1,0 +1,26 @@
+From 60a163779209ada7b107825f85b6d4629c3f2981 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Fr=C3=A9d=C3=A9ric=20L=C3=A9caille?= <flecaille@haproxy.com>
+Date: Wed, 15 Feb 2023 15:24:32 +0100
+Subject: [PATCH 20/20] Add timestamps to stderr sink.
+
+This is very annoying to have traces without timestamps especially at low level.
+---
+ src/sink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/sink.c b/src/sink.c
+index 58bcf81ef5..ee1110cbe2 100644
+--- a/src/sink.c
++++ b/src/sink.c
+@@ -1382,7 +1382,7 @@ int post_sink_resolve()
+ static void sink_init()
+ {
+ 	sink_new_fd("stdout", "standard output (fd#1)", LOG_FORMAT_RAW, 1);
+-	sink_new_fd("stderr", "standard output (fd#2)", LOG_FORMAT_RAW, 2);
++	sink_new_fd("stderr", "standard output (fd#2)", LOG_FORMAT_TIMED, 2);
+ 	sink_new_buf("buf0",  "in-memory ring buffer", LOG_FORMAT_TIMED, 1048576);
+ }
+ 
+-- 
+2.30.2
+

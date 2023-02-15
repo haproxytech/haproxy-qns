@@ -12,11 +12,13 @@ COPY --from=builder-ssl /usr/local/include/openssl/ /usr/local/include/openssl/
 COPY --from=builder-ssl \
   /usr/local/lib/libssl.so* /usr/local/lib/libcrypto.so* /usr/local/lib/
 
+ADD *.patch /tmp/
 ADD https://api.github.com/repos/haproxytech/quic-dev/git/refs/heads/qns version.json
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update && apt-get -y install git make gcc \
   && git clone --depth 1 -b qns https://github.com/haproxytech/quic-dev.git haproxy \
   && cd /haproxy \
+  && patch -p1 < /tmp/0001-Add-timestamps-to-stderr-sink.patch \
   && make -j $(nproc) \
     CC=gcc \
     TARGET=linux-glibc \
