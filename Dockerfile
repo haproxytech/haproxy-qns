@@ -49,6 +49,7 @@ COPY --from=builder-ssl \
   /usr/local/lib/libssl.so* /usr/local/lib/libcrypto.so* /usr/local/lib/
 COPY --from=builder /usr/local/sbin/haproxy /usr/local/sbin/
 COPY quic.cfg lighttpd.cfg /
+COPY sslkeylogger.lua /
 
 COPY run_endpoint.sh .
 RUN chmod +x run_endpoint.sh
