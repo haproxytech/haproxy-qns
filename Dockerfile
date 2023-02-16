@@ -15,7 +15,7 @@ COPY --from=builder-ssl \
 ADD *.patch /tmp/
 ADD https://api.github.com/repos/haproxytech/quic-dev/git/refs/heads/qns version.json
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get -y update && apt-get -y install git make gcc \
+RUN apt-get -y update && apt-get -y install git make gcc liblua5.3-0 liblua5.3-dev \
   && git clone --depth 1 -b qns https://github.com/haproxytech/quic-dev.git haproxy \
   && cd /haproxy \
   && patch -p1 < /tmp/0001-Add-timestamps-to-stderr-sink.patch \
@@ -34,6 +34,7 @@ RUN apt-get -y update && apt-get -y install git make gcc \
     DEBUG="-DDEBUG_DONT_SHARE_POOLS -DDEBUG_MEMORY_POOLS -DDEBUG_STRICT=2 -DDEBUG_TASK -DDEBUG_FAIL_ALLOC" \
     LDFLAGS="-fuse-ld=gold" \
     ARCH_FLAGS="-pg" \
+    USE_LUA=1 LUA_LIB_NAME=lua5.3 \
     IGNOREGIT=1 VERSION=$(git log -1 --pretty=format:%H) \
   && make install
 
@@ -42,7 +43,7 @@ FROM martenseemann/quic-network-simulator-endpoint:latest
 # Required for lighttpd
 ENV TZ=Europe/Paris
 RUN echo $TZ > /etc/timezone && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
-RUN apt-get -y update && apt-get -y install lighttpd && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y update && apt-get -y install lighttpd liblua5.3-0 && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder-ssl \
   /usr/local/lib/libssl.so* /usr/local/lib/libcrypto.so* /usr/local/lib/
