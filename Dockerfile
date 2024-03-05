@@ -1,10 +1,10 @@
 FROM ubuntu:20.04 AS builder-ssl
 
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get -y update && apt-get -y install git make gcc
+RUN apt-get -y update && apt-get -y install git make gcc autoconf libtool
 
-RUN git clone --depth 1 -b OpenSSL_1_1_1s+quic https://github.com/quictls/openssl.git
-RUN cd /openssl && ./config && make -j$(nproc) && make install_sw
+RUN git clone https://github.com/libressl/portable.git libressl
+RUN cd /libressl && ./autogen.sh && autoreconf -fvi && ./configure && make && make install
 
 FROM ubuntu:20.04 AS builder
 
