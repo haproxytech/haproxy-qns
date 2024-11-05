@@ -3,7 +3,7 @@ ARG SSLLIB=QuicTLS
 
 # combined list of dependencies for QuicTLS, AWS-LC
 ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get -y update && apt-get -y install git g++ make gcc wget autoconf libtool cmake curl
+RUN apt-get -y update && apt-get -y install git g++ make gcc wget autoconf libtool cmake curl libasan5
 
 # AWS-LC requirement
 COPY --from=golang:latest /usr/local/go/ /usr/local/go/
@@ -42,10 +42,10 @@ RUN apt-get -y update && apt-get -y install git make gcc liblua5.3-0 liblua5.3-d
     SSL_LIB=/usr/local/lib/ \
     SMALL_OPTS="" \
     CPU_CFLAGS.generic="-O0" \
-    ARCH_FLAGS="-g -Wno-deprecated-declarations" \
+    ARCH_FLAGS="-g -Wno-deprecated-declarations -fsanitize=address" \
     ERR=1 \
     DEBUG="-DDEBUG_DONT_SHARE_POOLS -DDEBUG_MEMORY_POOLS -DDEBUG_STRICT=2 -DDEBUG_TASK -DDEBUG_FAIL_ALLOC" \
-    LDFLAGS="-fuse-ld=gold" \
+    LDFLAGS="-fuse-ld=gold -fsanitize=address" \
     ARCH_FLAGS="-pg" \
     USE_LUA=1 LUA_LIB_NAME=lua5.3 \
     IGNOREGIT=1 VERSION=$(git log -1 --pretty=format:%H) \
@@ -57,7 +57,7 @@ ARG SSLLIB=QuicTLS
 # Required for lighttpd
 ENV TZ=Europe/Paris
 RUN echo $TZ > /etc/timezone && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
-RUN apt-get -y update && apt-get -y install lighttpd liblua5.3-0 && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y update && apt-get -y install lighttpd liblua5.3-0 libasan5 && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder-ssl \
   /usr/local/lib/libssl.so* /usr/local/lib/libcrypto.so* /usr/local/lib/
