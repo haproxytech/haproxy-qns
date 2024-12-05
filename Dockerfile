@@ -26,10 +26,10 @@ COPY --from=builder-ssl \
   /usr/local/lib/libssl.so* /usr/local/lib/libcrypto.so* /usr/local/lib/
 
 ADD *.patch /tmp/
-ADD https://api.github.com/repos/haproxy/haproxy/git/refs/heads/qns version.json
+ADD https://api.github.com/repos/haproxy/haproxy/git/refs/heads/quic-interop version.json
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update && apt-get -y install git make gcc liblua5.3-0 liblua5.3-dev \
-  && git clone --depth 1 -b qns https://github.com/haproxy/haproxy.git haproxy \
+  && git clone --depth 1 -b quic-interop https://github.com/haproxy/haproxy.git haproxy \
   && cd /haproxy \
   && patch -p1 < /tmp/0001-Add-timestamps-to-stderr-sink.patch \
   && make -j $(nproc) \
