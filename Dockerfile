@@ -1,5 +1,5 @@
 FROM ubuntu:20.04 AS builder-ssl
-ARG SSLLIB=QuicTLS
+ARG SSLLIB=QuicTLS-1.1.1
 
 # combined list of dependencies for QuicTLS, AWS-LC
 ENV DEBIAN_FRONTEND noninteractive
@@ -9,8 +9,10 @@ RUN apt-get -y update && apt-get -y install git g++ make gcc wget autoconf libto
 COPY --from=golang:latest /usr/local/go/ /usr/local/go/
 ENV PATH="/usr/local/go/bin:${PATH}"
 
-RUN if [ "$SSLLIB" = "QuicTLS" ]; \
+RUN if [ "$SSLLIB" = "QuicTLS-1.1.1" ]; \
       then git clone --depth 1 -b OpenSSL_1_1_1s+quic https://github.com/quictls/openssl.git && cd /openssl && ./config && make -j$(nproc) && make install_sw; \
+      elif [ "$SSLLIB" = "QuicTLS" ]; \
+      then git clone --depth 1 https://github.com/quictls/quictls.git openssl && cd /openssl && ./config --libdir=lib && make -j$(nproc) && make install_sw; \
       elif [ "$SSLLIB" = "AWS-LC" ]; \
       then git clone https://github.com/aws/aws-lc && cd aws-lc && cmake -DBUILD_SHARED_LIBS=1 -B build && make -C build && make -C build install; \
       elif [ "$SSLLIB" = "LibreSSL" ]; \
@@ -19,7 +21,7 @@ RUN if [ "$SSLLIB" = "QuicTLS" ]; \
     fi
 
 FROM ubuntu:20.04 AS builder
-ARG SSLLIB=QuicTLS
+ARG SSLLIB=QuicTLS-1.1.1
 
 COPY --from=builder-ssl /usr/local/include/openssl/ /usr/local/include/openssl/
 COPY --from=builder-ssl \
@@ -36,7 +38,7 @@ RUN apt-get -y update && apt-get -y install git make gcc liblua5.3-0 liblua5.3-d
     CC=gcc \
     TARGET=linux-glibc \
     CPU=generic \
-    $(if [ "$SSLLIB" = "QuicTLS" ]; then echo USE_OPENSSL=1; elif [ "$SSLLIB" = "LibreSSL" ]; then echo USE_OPENSSL=1; elif [ "$SSLLIB" = "AWS-LC" ]; then echo USE_OPENSSL_AWSLC=1; else echo "not supported SSLLIB"; exit 1; fi) \
+    $(if [ "$SSLLIB" = "QuicTLS" ] || [ "$SSLLIB" = "QuicTLS-1.1.1" ]; then echo USE_OPENSSL=1; elif [ "$SSLLIB" = "LibreSSL" ]; then echo USE_OPENSSL=1; elif [ "$SSLLIB" = "AWS-LC" ]; then echo USE_OPENSSL_AWSLC=1; else echo "not supported SSLLIB"; exit 1; fi) \
     USE_QUIC=1 \
     SSL_INC=/usr/local/include/ \
     SSL_LIB=/usr/local/lib/ \
@@ -52,7 +54,7 @@ RUN apt-get -y update && apt-get -y install git make gcc liblua5.3-0 liblua5.3-d
   && make install
 
 FROM martenseemann/quic-network-simulator-endpoint:latest
-ARG SSLLIB=QuicTLS
+ARG SSLLIB=QuicTLS-1.1.1
 
 # Required for lighttpd
 ENV TZ=Europe/Paris
