@@ -22,7 +22,27 @@ esac
 LOG=/logs/log.txt
 
 if [ "$ROLE" == "client" ]; then
-	exit 127
+	# Wait for the simulator to start up.
+	/wait-for-it.sh sim:57832 -s -t 30
+	if [ ! -z "$REQUESTS" ]; then
+		echo "requests $REQUESTS"
+		SERVER_ADDR=$(echo $REQUESTS | sed -e 's_^https://\([^:]*\):443/.*$_\1_')
+		CURL_REQUEST=$(echo $REQUESTS | sed -e 's_^https://[^:]*:443/\(.*\)$_http://127.0.0.1:20080/\1_')
+
+		cp /certs/cert.pem /tmp/
+		cp /certs/priv.key /tmp/cert.pem.key
+
+		export LD_LIBRARY_PATH=/usr/local/lib
+		echo "haproxy client version $(haproxy -vv)"
+		echo "starting haproxy..."
+		SERVER_ADDR=$SERVER_ADDR HAP_EXTRA_ARGS="" /usr/local/sbin/haproxy -d -dM -f /quic-be.cfg &> $LOG &
+
+		sleep 2 # add some delay for haproxy startup
+		cd /downloads
+		echo "curl $CURL_REQUEST"
+		curl -O $CURL_REQUEST
+	fi
+
 elif [ "$ROLE" == "server" ]; then
 	echo "starting lighttpd server"
 	lighttpd -f /lighttpd.cfg
