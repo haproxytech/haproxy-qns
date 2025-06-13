@@ -61,7 +61,7 @@ ARG SSLLIB
 # Required for lighttpd
 ENV TZ=Europe/Paris
 RUN echo $TZ > /etc/timezone && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime
-RUN apt-get -y update && apt-get -y install lighttpd liblua5.3-0 libasan5 && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y update && apt-get -y install curl lighttpd liblua5.3-0 libasan5 && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder-ssl \
   /usr/local/lib/libssl.so* /usr/local/lib/libcrypto.so* /usr/local/lib/
