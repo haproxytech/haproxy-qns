@@ -1,5 +1,7 @@
-FROM ubuntu:20.04 AS builder-ssl
 ARG SSLLIB=QuicTLS-1.1.1
+
+FROM ubuntu:20.04 AS builder-ssl
+ARG SSLLIB
 
 # combined list of dependencies for QuicTLS, AWS-LC
 ENV DEBIAN_FRONTEND noninteractive
@@ -21,7 +23,7 @@ RUN if [ "$SSLLIB" = "QuicTLS-1.1.1" ]; \
     fi
 
 FROM ubuntu:20.04 AS builder
-ARG SSLLIB=QuicTLS-1.1.1
+ARG SSLLIB
 
 COPY --from=builder-ssl /usr/local/include/openssl/ /usr/local/include/openssl/
 COPY --from=builder-ssl \
@@ -54,7 +56,7 @@ RUN apt-get -y update && apt-get -y install git make gcc liblua5.3-0 liblua5.3-d
   && make install
 
 FROM martenseemann/quic-network-simulator-endpoint:latest
-ARG SSLLIB=QuicTLS-1.1.1
+ARG SSLLIB
 
 # Required for lighttpd
 ENV TZ=Europe/Paris
